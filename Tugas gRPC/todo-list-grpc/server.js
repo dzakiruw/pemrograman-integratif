@@ -16,7 +16,7 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
-function AddTodo(call, callback) {
+export function AddTodo(call, callback) {
   const todos = call.request;
 
   connection.query("INSERT INTO todos SET ?", todos, (error, result) => {
@@ -27,7 +27,7 @@ function AddTodo(call, callback) {
   });
 }
 
-function FindTodo(call, callback) {
+export function FindTodo(call, callback) {
   const id = call.request.id;
 
   connection.query("SELECT * FROM todos WHERE id = ?", id, (error, results) => {
@@ -38,8 +38,17 @@ function FindTodo(call, callback) {
   });
 }
 
-function UpTodo(call, callback) {
-  const tod = call.request;
+export function GetAllTodos(call, callback) {
+  connection.query("SELECT * FROM todos", (error, results) => {
+    if (error) throw error;
+
+    const todos = results;
+    callback(null, { todos: todos });
+  });
+}
+
+export function UpTodo(call, callback) {
+  const todo = call.request;
 
   connection.query(
     "UPDATE todos SET title = ?, description = ?, done = ?, WHERE id = ?",
@@ -52,7 +61,7 @@ function UpTodo(call, callback) {
   );
 }
 
-function RemoveTodo(call, callback) {
+export function RemoveTodo(call, callback) {
   const id = call.request.id;
 
   connection.query("DELETE FROM todos WHERE id = ?", id, (error, result) => {
@@ -62,13 +71,14 @@ function RemoveTodo(call, callback) {
   });
 }
 
-function main() {
+export function main() {
   const server = new grpc.Server();
   server.addService(TodosService.service, {
     CreateTodo: AddTodo,
     ReadTodo: FindTodo,
     UpdateTodo: UpTodo,
     DeleteTodo: RemoveTodo,
+    GetAllTodo: GetAllTodos,
   });
 
   server.bindAsync(
