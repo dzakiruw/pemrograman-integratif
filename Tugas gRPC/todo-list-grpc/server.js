@@ -51,7 +51,7 @@ export function UpTodo(call, callback) {
   const todo = call.request;
 
   connection.query(
-    "UPDATE todos SET title = ?, description = ?, done = ?, WHERE id = ?",
+    "UPDATE todos SET title = ?, description = ?, done = ? WHERE id = ?",
     [todo.title, todo.description, todo.done, todo.id],
     (error, result) => {
       if (error) throw error;
