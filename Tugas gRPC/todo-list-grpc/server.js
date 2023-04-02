@@ -22,7 +22,9 @@ connection.connect((err) => {
   console.log('Connected to the database as ID:', connection.threadId);
 });
 
+//memanggil objek dan callback fungsi sebagai parameter
 export function AddTodo(call, callback) {
+  //inisialisasi pemanggilan objek berisi request
   const todos = call.request;
 
   connection.query("INSERT INTO todos SET ?", todos, (error, result) => {
