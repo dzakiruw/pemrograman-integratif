@@ -14,5 +14,7 @@ message MahasiswaList {
 }
 
 service MahasiswaService {
-  rpc GetAll (Empty) returns (MahasiswaList) {}
+  rpc getAll (Empty) returns (MahasiswaList) {}
+  
+  rpc CreateMahasiswa (Mahasiswa) returns (Mahasiswa) {}
 }

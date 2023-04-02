@@ -1,9 +1,9 @@
-// Import package 
-const grpc = require('@grpc/grpc-js');
-var protoLoader = require('@grpc/proto-loader');
+// Import package
+const grpc = require("@grpc/grpc-js");
+var protoLoader = require("@grpc/proto-loader");
 
-// Define Proto path 
-const PROTO_PATH = './mahasiswa.proto';
+// Define Proto path
+const PROTO_PATH = "./mahasiswa.proto";
 
 const options = {
   keepCase: true,
@@ -11,38 +11,45 @@ const options = {
   enums: String,
   defaults: true,
   oneofs: true,
-}
+};
 
 var packageDefinition = protoLoader.loadSync(PROTO_PATH, options);
 
-// Load Proto 
+// Load Proto
 const mahasiswaProto = grpc.loadPackageDefinition(packageDefinition);
 
 const server = new grpc.Server();
 
-// Dummy data 
-let mahasiswa = [
-  {
-    id: "1",
-    nama: "Rudi",
-    nrp: "5119",
-    nilai: 59
-  },
-  {
-    id: "2",
-    nama: "Budi",
-    nrp: "5118",
-    nilai: 60
-  }
-]
+// Dummy data
+let mahasiswa = {
+  mahasiswa: [
+    {
+      id: "1",
+      nama: "Rudi",
+      nrp: "5119",
+      nilai: 59,
+    },
+    {
+      id: "2",
+      nama: "Budi",
+      nrp: "5118",
+      nilai: 60,
+    },
+  ],
+};
 
 server.addService(mahasiswaProto.MahasiswaService.service, {
   getAll: (_, callback) => {
     callback(null, mahasiswa);
-  }
-})
+  },
+  addMahasiswa: (call, callback) => {
+    const _mahasiswa = call.request;
+    mahasiswa.mahasiswa.push(_mahasiswa);
+    callback(null, _mahasiswa);
+  },
+});
 
-// Start server 
+// Start server
 server.bindAsync(
   "127.0.0.1:50051",
   grpc.ServerCredentials.createInsecure(),
@@ -50,4 +57,4 @@ server.bindAsync(
     console.log("Server running at http://127.0.0.1:50051");
     server.start();
   }
-)
+);
