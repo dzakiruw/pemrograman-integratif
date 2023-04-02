@@ -14,16 +14,24 @@ const connection = mysql.createConnection({
   database: "todos",
 });
 
-connection.connect();
+connection.connect((err) => {
+  if (err) {
+    console.error(`Error connecting to the database: ${err.stack}`);
+    return;
+  }
+  console.log('Connected to the database as ID:', connection.threadId);
+});
 
 export function AddTodo(call, callback) {
   const todos = call.request;
 
   connection.query("INSERT INTO todos SET ?", todos, (error, result) => {
-    if (error) throw error;
-
-    todos.id = result.insertId;
-    callback(null, "Todo added");
+    if (error) {
+      console.error(`Error adding todo: ${error.stack}`);
+      return callback(error);
+    }
+    console.log(`Todo with id ${result.insertId} added`);
+    callback(null, { id: result.insertId });
   });
 }
 
@@ -31,8 +39,12 @@ export function FindTodo(call, callback) {
   const id = call.request.id;
 
   connection.query("SELECT * FROM todos WHERE id = ?", id, (error, results) => {
-    if (error) throw error;
+    if (error) {
+      console.error(`Error finding todo: ${error.stack}`);
+      return callback(error);
+    }
 
+    console.log(`Todo with id ${id} found`);
     const todo = results[0];
     callback(null, todo);
   });
@@ -40,7 +52,11 @@ export function FindTodo(call, callback) {
 
 export function GetAllTodos(call, callback) {
   connection.query("SELECT * FROM todos", (error, results) => {
-    if (error) throw error;
+    if (error)
+      if (error) {
+        console.error(`Error getting all todos: ${error.stack}`);
+        return callback(error);
+      }
 
     const todos = results;
     callback(null, { todos: todos });
@@ -54,8 +70,11 @@ export function UpTodo(call, callback) {
     "UPDATE todos SET title = ?, description = ?, done = ? WHERE id = ?",
     [todo.title, todo.description, todo.done, todo.id],
     (error, result) => {
-      if (error) throw error;
-
+      if (error) {
+        console.error(`Error updating todo: ${error.stack}`);
+        return callback(error);
+      }
+      console.log(`Todo with id ${todo.id} updated`);
       callback(null, todo);
     }
   );
@@ -65,9 +84,13 @@ export function RemoveTodo(call, callback) {
   const id = call.request.id;
 
   connection.query("DELETE FROM todos WHERE id = ?", id, (error, result) => {
-    if (error) throw error;
+    if (error) {
+      console.error(`Error removing todo: ${error.stack}`);
+      return callback(error);
+    }
 
-    callback(null, "Todo deleted");
+    console.log(`Todo with id ${id} deleted`);
+    callback(null, {});
   });
 }
 
