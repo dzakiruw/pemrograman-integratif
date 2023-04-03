@@ -33,7 +33,7 @@ export function AddTodo(call, callback) {
       return callback(error);
     }
     console.log(`Todo with id ${result.insertId} added`);
-    callback(null, { id: result.insertId });
+    callback(null, todos );
   });
 }
 

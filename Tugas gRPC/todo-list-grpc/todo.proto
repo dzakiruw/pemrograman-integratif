@@ -14,9 +14,15 @@ service TodoService {
     rpc ReadTodo (Todo) returns (Todo) {}
     rpc UpdateTodo (Todo) returns (Todo) {}
     rpc DeleteTodo (Todo) returns (Todo) {}
-    rpc GetAllTodo (Todo) returns (Todo) {}
+    rpc GetAllTodo (Empty) returns (Todos) {}
 }
 
 message TodoRequest {
     int32 id = 1;
 }
+
+message Todos {
+    repeated Todo todos = 1;
+}
+
+message Empty {}
